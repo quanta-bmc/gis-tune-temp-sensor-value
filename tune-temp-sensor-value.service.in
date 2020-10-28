@@ -1,0 +1,13 @@
+[Unit]
+Description=Adjust Inlet Temperature Sensor Value Manager
+After=xyz.openbmc_project.Hwmon@-ahb-apb-i2c\x4083000-i2c\x2dswitch\x4077-i2c\406-lm75\x405c.service
+StartLimitBurst=10
+StartLimitIntervalSec=30
+
+[Service]
+ExecStart=@bindir@/tune-temp-sensor-value
+Restart=always
+StandardOutput=syslog
+
+[Install]
+WantedBy=multi-user.target

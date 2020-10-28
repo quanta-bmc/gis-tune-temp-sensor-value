@@ -1,0 +1,1 @@
+option ('tests', type : 'feature', value : 'disabled', description : 'Enable Unit tests for tune-temp-sensor-value, default is disable')
