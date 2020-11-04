@@ -5,7 +5,7 @@ int main(int argc, char* argv[])
     sdbusplus::bus::bus bus = sdbusplus::bus::new_default();
     std::string FanSensorService;
     std::string TempSensorService;
-    std::string hwmon_fan_num;
+    std::string hwmon_fan_path;
     int opt;
     double rpm;
     double driver_val;
@@ -29,35 +29,35 @@ int main(int argc, char* argv[])
         switch (opt)
         {
             case 'v':
-                verbose_flag = true;
+                g_verbose_flag = true;
                 break;
             case 'p':
-                update_period = std::stod(optarg);
-                std::cerr << "update-period : " << update_period << std::endl;
+                g_update_period = std::stod(optarg);
+                std::cerr << "update-period : " << g_update_period << std::endl;
                 break;
             case 's':
-                temp_sensor_path = optarg;
-                std::cerr << "temp-dbus-path : " << temp_sensor_path << std::endl;
+                g_temp_sensor_path = optarg;
+                std::cerr << "temp-dbus-path : " << g_temp_sensor_path << std::endl;
                 break;
             case 'f':
-                fan_sensor_path = optarg;
-                std::cerr << "fan-dbus-path : " << fan_sensor_path << std::endl;
+                g_fan_sensor_path = optarg;
+                std::cerr << "fan-dbus-path : " << g_fan_sensor_path << std::endl;
                 break;
             case 'd':
-                temp_dts_path = optarg;
-                std::cerr << "temp-dts-path : " << temp_dts_path << std::endl;
+                g_temp_dts_path = optarg;
+                std::cerr << "temp-dts-path : " << g_temp_dts_path << std::endl;
                 break;
             case 't':
-                fan_dts_path = optarg;
-                std::cerr << "fan-dts-path " << fan_dts_path << std::endl;
+                g_fan_dts_path = optarg;
+                std::cerr << "fan-dts-path " << g_fan_dts_path << std::endl;
                 break;
             case 'h':
-                crit_high_value = std::stod(optarg);
-                std::cerr << "crit-high-value " << crit_high_value << std::endl;
+                g_crit_high_value = std::stod(optarg);
+                std::cerr << "crit-high-value " << g_crit_high_value << std::endl;
                 break;
             case 'l':
-                crit_low_value = std::stod(optarg);
-                std::cerr << "crit-low-value " << crit_low_value << std::endl;
+                g_crit_low_value = std::stod(optarg);
+                std::cerr << "crit-low-value " << g_crit_low_value << std::endl;
                 break;
             default:
                 usage(argv[0]);
@@ -68,22 +68,22 @@ int main(int argc, char* argv[])
 
     while(FanSensorService.empty() || TempSensorService.empty())
     {
-        FanSensorService = util::SDBusPlus::getService(bus, value_intf, fan_sensor_path);
-        TempSensorService = util::SDBusPlus::getService(bus, value_intf, temp_sensor_path);
+        FanSensorService = util::SDBusPlus::getService(bus, g_value_intf, g_fan_sensor_path);
+        TempSensorService = util::SDBusPlus::getService(bus, g_value_intf, g_temp_sensor_path);
     }
 
-    hwmon_fan_num = findHwmonFromOFPath(fan_dts_path);
-    std::ifstream ifile(findHwmonFromOFPath(temp_dts_path)+"/temp1_input");
+    hwmon_fan_path = find_hwmon_from_OFPath(g_fan_dts_path);
+    std::ifstream ifile(find_hwmon_from_OFPath(g_temp_dts_path)+"/temp1_input");
 
     while(true)
     {
-        rpm=get_ave_rpm(hwmon_fan_num);
+        rpm=get_ave_rpm(hwmon_fan_path);
         ifile >> driver_val;
-        adjust_sensor_val = get_adjust_sensor_value(bus, TempSensorService, rpm, driver_val);
-        util::SDBusPlus::setProperty(bus, TempSensorService, temp_sensor_path,
-                                    value_intf, "Value", adjust_sensor_val);
+        adjust_sensor_val = get_adjust_sensor_value(bus, rpm, driver_val);
+        util::SDBusPlus::setProperty(bus, TempSensorService, g_temp_sensor_path,
+                                    g_value_intf, "Value", adjust_sensor_val);
         check_sensor_threshold(bus, TempSensorService, adjust_sensor_val);
-        sleep(update_period);
+        sleep(g_update_period);
     }
 
     ifile.close();
