@@ -3,8 +3,10 @@
 #include <sdbusplus/bus/match.hpp>
 #include <sdbusplus/message.hpp>
 #include <xyz/openbmc_project/Common/error.hpp>
-#define DBUS_PROPERTY_IFACE "org.freedesktop.DBus.Properties"
+
 // Object Mapper related
+static constexpr const char* dbusPropertyIface =
+    "org.freedesktop.DBus.Properties";
 static constexpr const char* objMapperService =
     "xyz.openbmc_project.ObjectMapper";
 static constexpr const char* objMapperPath =
@@ -30,7 +32,7 @@ class SDBusPlus
         try
         {
             auto methodCall = bus.new_method_call(
-                busName.c_str(), objPath.c_str(), DBUS_PROPERTY_IFACE, "Set");
+                busName.c_str(), objPath.c_str(), dbusPropertyIface, "Set");
 
             methodCall.append(interface.c_str());
             methodCall.append(property);
@@ -54,7 +56,7 @@ class SDBusPlus
                     const std::string& property)
     {
         auto methodCall = bus.new_method_call(busName.c_str(), objPath.c_str(),
-                                              DBUS_PROPERTY_IFACE, "Get");
+                                              dbusPropertyIface, "Get");
 
         methodCall.append(interface.c_str());
         methodCall.append(property);
