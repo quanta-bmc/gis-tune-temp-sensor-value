@@ -75,17 +75,20 @@ int main(int argc, char* argv[])
     hwmon_fan_path = find_hwmon_from_OFPath(g_fan_dts_path);
     std::ifstream ifile(find_hwmon_from_OFPath(g_temp_dts_path)+"/temp1_input");
 
-    while(true)
-    {
-        rpm=get_ave_rpm(hwmon_fan_path);
-        ifile >> driver_val;
-        adjust_sensor_val = get_adjust_sensor_value(bus, rpm, driver_val);
-        util::SDBusPlus::setProperty(bus, TempSensorService, g_temp_sensor_path,
-                                    g_value_intf, "Value", adjust_sensor_val);
-        check_sensor_threshold(bus, TempSensorService, adjust_sensor_val);
-        sleep(g_update_period);
+    if(ifile.is_open()){
+        while(true)
+        {
+            rpm=get_ave_rpm(hwmon_fan_path);
+            ifile.clear();
+            ifile.seekg(0);
+            ifile >> driver_val;
+            adjust_sensor_val = get_adjust_sensor_value(bus, rpm, driver_val);
+            util::SDBusPlus::setProperty(bus, TempSensorService, g_temp_sensor_path,
+                                        g_value_intf, "Value", adjust_sensor_val);
+            check_sensor_threshold(bus, TempSensorService, adjust_sensor_val);
+            sleep(g_update_period);
+        }
+        ifile.close();
     }
-
-    ifile.close();
     return 0;
 }

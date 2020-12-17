@@ -97,8 +97,11 @@ static double get_ave_rpm(std::string hwmonfannum)
     for(int i=1; i<=g_fan_cnt; i++)
     {
         ifile.open(hwmonfannum + "/fan" + std::to_string(i) + "_input");
-        ifile >> fan_driver_val;
-        rpm += fan_driver_val;
+        if(ifile.is_open())
+        {
+            ifile >> fan_driver_val;
+            rpm += fan_driver_val;
+        }
         ifile.close();
     }
     rpm /= g_fan_cnt;
