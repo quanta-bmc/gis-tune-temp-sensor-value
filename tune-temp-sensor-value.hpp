@@ -101,8 +101,8 @@ static double get_ave_rpm(std::string hwmonfannum)
         {
             ifile >> fan_driver_val;
             rpm += fan_driver_val;
+            ifile.close();
         }
-        ifile.close();
     }
     rpm /= g_fan_cnt;
     return rpm;
