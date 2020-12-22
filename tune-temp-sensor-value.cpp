@@ -66,11 +66,7 @@ int main(int argc, char* argv[])
         std::cerr << std::endl;
     }
 
-    while(FanSensorService.empty() || TempSensorService.empty())
-    {
-        FanSensorService = util::SDBusPlus::getService(bus, g_value_intf, g_fan_sensor_path);
-        TempSensorService = util::SDBusPlus::getService(bus, g_value_intf, g_temp_sensor_path);
-    }
+    TempSensorService = util::SDBusPlus::getService(bus, g_value_intf, g_temp_sensor_path);
 
     hwmon_fan_path = find_hwmon_from_OFPath(g_fan_dts_path);
     std::ifstream ifile(find_hwmon_from_OFPath(g_temp_dts_path)+"/temp1_input");
@@ -79,6 +75,10 @@ int main(int argc, char* argv[])
         while(true)
         {
             rpm=get_ave_rpm(hwmon_fan_path);
+            if (rpm == -1)
+            {
+                return -1;
+            }
             ifile.clear();
             ifile.seekg(0);
             ifile >> driver_val;
@@ -90,5 +90,11 @@ int main(int argc, char* argv[])
         }
         ifile.close();
     }
+    else
+    {
+        std::cerr << "Inlet Temperature Sensor Does Not to Open !!!" << std::endl;
+        return -1;
+    }
+    
     return 0;
 }
