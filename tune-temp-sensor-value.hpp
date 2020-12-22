@@ -106,6 +106,7 @@ static double get_ave_rpm(std::string hwmonfannum)
         else
         {
             std::cerr << "Fan" + std::to_string(i) + " Sensor Does Not to Open !!!" << std::endl;
+            ifile.close();
             return -1;
         }
     }

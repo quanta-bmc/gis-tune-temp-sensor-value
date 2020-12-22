@@ -93,6 +93,7 @@ int main(int argc, char* argv[])
     else
     {
         std::cerr << "Inlet Temperature Sensor Does Not to Open !!!" << std::endl;
+        ifile.close();
         return -1;
     }
     
