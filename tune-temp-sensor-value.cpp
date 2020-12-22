@@ -77,7 +77,7 @@ int main(int argc, char* argv[])
             rpm=get_ave_rpm(hwmon_fan_path);
             if (rpm == -1)
             {
-                return -1;
+                continue;
             }
             ifile.clear();
             ifile.seekg(0);
