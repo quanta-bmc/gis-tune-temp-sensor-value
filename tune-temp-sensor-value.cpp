@@ -74,6 +74,7 @@ int main(int argc, char* argv[])
     if(ifile.is_open()){
         while(true)
         {
+            sleep(g_update_period);
             rpm=get_ave_rpm(hwmon_fan_path);
             if (rpm == -1)
             {
@@ -86,7 +87,6 @@ int main(int argc, char* argv[])
             util::SDBusPlus::setProperty(bus, TempSensorService, g_temp_sensor_path,
                                         g_value_intf, "Value", adjust_sensor_val);
             check_sensor_threshold(bus, TempSensorService, adjust_sensor_val);
-            sleep(g_update_period);
         }
         ifile.close();
     }
