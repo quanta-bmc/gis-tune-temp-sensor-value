@@ -22,7 +22,7 @@ static std::string g_fan_dts_path = "/ahb/apb/i2c@83000/i2c-switch@75/i2c@2/fan_
 static std::string g_temp_dts_path = "/ahb/apb/i2c@83000/i2c-switch@77/i2c@6/lm75@5c";
 static int g_crit_high_value = 35;
 static int g_crit_low_value = 0;
-static double g_update_period = 0.1;
+static double g_update_period = 1;
 static bool g_verbose_flag = false;
 static threshold_state g_sensor_status;
 static constexpr int g_fan_cnt = 6;
